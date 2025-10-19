@@ -65,7 +65,7 @@
      sudo ufw allow 'Apache'
      ```
 
-   - Abrir Site criado: http://172.2/bloqueado
+   - Abrir Site criado: http://10.104.16.13/grupo4
      
 3. **Instalar o SSH no Linux**
    - Para instalação, siga as orientações abaixo
@@ -220,6 +220,6 @@ Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 | Nome     | Link                                               |
 |----------|----------------------------------------------------|
 | **Bloquear** | [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      |
-| **Grupo 1** | [http://10.104.16.13/grupo4](http://10.104.16.13/grupo4)) |
+| **Grupo 4** | [http://10.104.16.13/grupo4](http://10.104.16.13/grupo4) |
 
 </div>
