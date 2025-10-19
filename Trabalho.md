@@ -1,4 +1,4 @@
-<h2 align="center">TRABALHO REDES</h2>
+<h2 align="center">TRABALHO REDES - BLOQUEIO DE SITES POR PROXY SQUID E EXIBIÇÃO DE SERVIDOR WEB LINUX</h2>
 <p align="center">
 
 ---
@@ -6,31 +6,68 @@
 ### Sumário
 1. [Integrantes do Grupo](#integrantes-do-grupo)
 2. [Passo a Passo](#passo-a-passo)
-3. [Andamento](#andamento)
-4. [Salvar](#Salvar)
-5. [Imagens](#Imagens)
-6. [Sites Relevantes](#sites-relevantes)
+3. [Salvar](#Salvar)
 
 ---
 
 ### Integrantes do Grupo
-- **Grupo 1:** Yuri Alexander, Eduardo Cerreta e Meani 
-- **Eduardo e Yuri ficaram até o final da aula** 
+- **Grupo 4:** José Otávio e Arthur Spironelo
 > **Nota:** Todas as instruções a seguir devem ser executadas no terminal do Linux.
-
 > **Ferramentas:** SSH, Linux, Windows, Apache 2, Sub-interface e Proxy(SQUID e IP TABLES)
-
-
 
 ---
 
 ## Passo a passo
 1. **Planejar as redes**
    - Definir a topologia de rede, incluindo dispositivos e conexões
-   - **LAN:** 192.168.1.0/29
-   - **WAN:** 200.10.10.0/30
+   - **LAN:** 192.168.10.24/29
+   - **WAN:** 200.10.10.12/30
 
-2. **Instalar o SSH no Linux**
+
+2. **Instalar o Apache 2 no Linux**
+   - Para instalação, siga as orientações abaixo:
+     ```bash
+     sudo apt update
+     sudo apt install apache2
+     ```
+
+   - Inicie o serviço
+     ```bash
+     sudo systemctl start apache2
+     ```
+
+   - Criando a página
+     ```bash
+     sudo nano /var/www/html/bloqueado.html
+     ```
+
+   - A página
+     ```html
+     <!DOCTYPE html>
+     </html>
+     ```
+
+   - Para salvar e sair da "criação html"
+     ```bash
+     Ctrl + X
+     ou
+     Y + Enter
+     ```
+
+   - Configurando permissões
+     ```bash
+     sudo chown -R www-data:www-data /var/www/html/
+     sudo chmod -R 755 /var/www/html/
+     ```
+
+   - (Opcional) Habilitar no firewall
+     ```bash
+     sudo ufw allow 'Apache'
+     ```
+
+   - Abrir Site criado: http://172.2/bloqueado
+     
+3. **Instalar o SSH no Linux**
    - Para instalação, siga as orientações abaixo
      ```bash
      sudo apt-get update
@@ -57,61 +94,7 @@
      ```bash
      sudo su username
      ```
-
-3. **Instalar o Apache 2 no Linux**
-   - Para instalação, siga as orientações abaixo:
-     ```bash
-     sudo apt update
-     sudo apt install apache2
-     ```
-
-   - Inicie o serviço
-     ```bash
-     sudo systemctl start apache2
-     ```
-
-   - Criando a página
-     ```bash
-     sudo nano /var/www/html/grupo1.html
-     ```
-
-   - A página
-     ```html
-     <!DOCTYPE html>
-     <html lang="pt-BR">
-     <head>
-         <meta charset="UTF-8">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <title>Página do Grupo 1</title>
-     </head>
-     <body>
-         <h1>Bem-vindo à nossa página, professor!</h1>
-         <p>Esta é uma página criada com Apache2.</p>
-     </body>
-     </html>
-     ```
-
-   - Para salvar e sair da "criação html"
-     ```bash
-     Ctrl + X
-     ou
-     Y + Enter
-     ```
-
-   - Configurando permissões
-     ```bash
-     sudo chown -R www-data:www-data /var/www/html/
-     sudo chmod -R 755 /var/www/html/
-     ```
-
-   - (Opcional) Habilitar no firewall
-     ```bash
-     sudo ufw allow 'Apache'
-     ```
-
-   - Abrir Site criado: http://172.25.2.204/grupo1
-
-5. **IP TABLES no Linux**
+4. **IP TABLES no Linux**
    - Instalação
      ```bash
      sudo apt install iptables
@@ -128,8 +111,8 @@
      route add - net 0.0.0.0 netmask 0.0.0.0 GW IP
      ```
      
-4. **Criar Sub-interfaces no Linux**
-   - Primeiramente tem que instalar o net-tools
+5. **Criar Sub-interfaces no Linux**
+   - Primeiro precisa instalar o net-tools
      ```bash
      sudo apt install net-tools
      ```
@@ -141,7 +124,7 @@
 
    - Adiciona a sub-interface (O IP será diferente conforme o grupo)
      ```bash
-     sudo ifconfig enp0s31f6:0 192.168.1.9 netmask 255.255.255.248
+     sudo ifconfig enp0s31f6:0 192.168.10.24 netmask 255.255.255.248
      ```
 
 6. **Bloquear sites com Proxy**
@@ -178,33 +161,29 @@
 
    - Criar arquivo
      ```bash
-     sudo touch /etc/squid/sites_proibidos.txt
-
-     sudo touch /etc/squid/palavras_proibidas.txt
+     sudo touch /etc/squid/sitesbloqueados.txt
      ```
      
    - Entrar no Arquivo
      ```bash
-     sudo nano /etc/squid/sites_proibidos.txt
-
-     sudo nano /etc/squid/palavras_proibidas.txt
+     sudo nano /etc/squid/sitesbloqueados.txt
      ``` 
 
    - Configurações do SQUID
      ```bash
-     # Define a porta do proxy
-     http_port 3128
-   
-     # Permite acesso apenas à rede local (192.168.1.8/255.255.255.248)
-       acl sites_proibidos url_regex -i "/etc/squid/sites_proibidos.txt"
-       http_access deny sites_proibidos
-   
-     # Bloqueia acesso a sites listados no arquivo "sites_proibidos"
-     deny_info http://172.25.2.214/grupo2 sites_proibidos
+      http_port 3128
+      visible_hostname taviko
+      
+      # ACLs
+      acl sites_bloqueados url_regex -i "/etc/squid/sitesbloqueados.txt"
+      
+      # Página de erro personalizada
+      deny_info http://10.104.16.13/bloqueado sites_bloqueados
+      
+      # Regras de acesso
+      http_access deny sites_bloqueados
+      http_access allow all
      ```
-     
-
-
 
 
    - Reiniciar SQUID / Qualquer modificação deve ser reiniciado o SQUID
@@ -223,52 +202,24 @@
    - Em **Endereço de proxy**, coloque o IP da sua máquina Linux e, na **Porta**, coloque 3128.
 ---
 
-### Andamento
-| Nome          | Concluído                                               | Para que serve                          |
-|---------------|:-------------------------------------------------------:|-----------------------------------------|
-| LINUX         |   ✅                                                     | Ambiente para execução das tarefas      |
-| SSH           |   ✅                                                     | Acesso remoto e seguro ao servidor      |
-| APACHE 2      |   ✅                                                     | Servidor web para hospedar páginas      |
-| SUB-INTERFACE |   ✅                                                     | Segmentação de rede para diferentes serviços |
-| ROTAS         |   ✅                                                     | Direcionamento de tráfego na rede       |
-| PROXY         |   ✅                                                     | Intermediário para requisições externas |
-| SQUID       |    ✅                                                 | Servidor proxy para controle de acesso  |
-| IP TABLES   |   ✅                                                     | Gerenciamento de regras de firewall     |
----
-
 ### Salvar
 Endereços que começam com 172 são endereços inválidos que não navegam pela internet.
 Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 
-- **Endereço IPv4:** 172.25.2.205
-- **Máscara de Sub-rede:** 255.255.255.192
-- **Gateway Padrão:** 172.25.2.193
+- **Endereço IPv4:** 
+- **Máscara de Sub-rede:** 
+- **Gateway Padrão:** 
 - **IP Original** aaa
 
 ---
 
-<h1 align="center">Imagens</h1>
-
-<h2 align="center">Redes</h2>
-<p align="center">
-    <img src="redes.png" alt="redes">
-</p>
-
-<h2 align="center">Quadro</h2>
-<p align="center">
-    <img src="quadro.jpeg" alt="quadro">
-</p>
-
----
-
-<h2 align="center">Sites Relevantes</h2>
+<h2 align="center">Endereços dos Sites</h2>
 
 <div align="center">
 
 | Nome     | Link                                               |
 |----------|----------------------------------------------------|
-| **Dontpad** | [dontpad.com/grupodosfalhosprogramadores](https://dontpad.com/grupodosfalhosprogramadores) |
-| **Bloquear** | [pedr0xh.free.nf](http://172.25.2.204/grupo1.html)                         |
-| **Grupo 1** | [http://172.25.2.204/grupo1.html](http://172.25.2.204/grupo1.html) |
+| **Bloquear** | [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      |
+| **Grupo 1** | [http://10.104.16.13/grupo4](http://10.104.16.13/grupo4)) |
 
 </div>
