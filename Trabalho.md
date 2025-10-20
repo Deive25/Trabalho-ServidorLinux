@@ -4,6 +4,11 @@
 ---
 
 ### Sumário
+
+Neste trabalho foi feita uma simulação em laboratório para representar uma estrutura de rede de uma empresa com uma Matriz e suas filiais. A Matriz é representada por um servidor central Linux (Ubuntu), enquanto cada filial conta com um servidor local Linux (que funciona como proxy) e um computador Windows, simulando as máquinas usadas pelos funcionários.
+
+O objetivo principal é montar um Servidor de Internet (ISP) onde o computador Windows só consegue acessar a internet se o servidor local Linux permitir, e esse servidor local só pode acessar se o servidor central (Matriz) também liberar o tráfego, ou seja, tudo passa por camadas de permissão e controle.
+
 1. [Integrantes do Grupo](#integrantes-do-grupo)
 2. [Passo a Passo](#passo-a-passo)
 3. [Salvar](#Salvar)
