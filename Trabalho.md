@@ -216,7 +216,7 @@ Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 
 <div align="center">
 
-Nome                     Link                                               
+Nome            |         Link                                               
 - **Grupo 4**  [Pagina Incial do Servidor](http://10.104.16.13/) 
 - **Bloquear**  [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      
  
