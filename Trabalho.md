@@ -427,28 +427,7 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
      sudo su username
      ```
 
-4. **Criar Sub-interfaces no Linux**
-   - Primeiro precisa instalar o net-tools
-     ```bash
-     sudo apt install net-tools
-     ```
-
-   - Mostra roteador
-     ```bash
-     sudo ifconfig
-     ```
-
-   - Adiciona a sub-interface (O IP será diferente conforme o grupo)
-     Adicionando o IP para a rede LAN com o Windows
-     ```bash
-     sudo ifconfig enp0s31f6:0 192.168.10.25 netmask 255.255.255.248
-     ```
-     Adicionando o IP para a rede WAN com o Servidor 
-      ```bash
-     sudo ifconfig enp0s31f6:0 200.10.10.14 netmask 255.255.255.252
-     ```
-
-5. **Bloquear sites com Proxy**
+4. **Bloquear sites com Proxy**
    - Baixar o SQUID
      ```bash
      sudo apt-get install squid
@@ -488,7 +467,17 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
    - Entrar no Arquivo
      ```bash
      sudo nano /etc/squid/sitesbloqueados.txt
-     ``` 
+     ```
+
+   -Exemplo de Arquivo sitesbloqueados.txt, aqui estamos bloqueando sites de aposta
+   ```bash
+     .superbet.bet.br
+     .bet365.bet.br
+     .betano.bet.br
+     .superbet.com
+     .bet365.com
+     .betano.com
+   ```
 
    - Configurações do SQUID
      ```bash
@@ -498,11 +487,10 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
       acl sites_bloqueados url_regex -i "/etc/squid/sitesbloqueados.txt"
       
       # Página de erro personalizada
-      deny_info http://10.104.16.13/bloqueado sites_bloqueados
+      deny_info http://192.168.10.25/bloqueado sites_bloqueados
       
       # Regras de acesso
       http_access deny sites_bloqueados
-      http_access allow all
      ```
 
 
@@ -511,8 +499,33 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
      sudo systemctl stop squid
      sudo systemctl start squid
      ```
-     
-6. **Acessando o site pelo Windows 11**
+6. **Criar Sub-interfaces no Linux**
+   - Primeiro precisa instalar o net-tools
+     ```bash
+     sudo apt install net-tools
+     ```
+
+   - Mostra roteador
+     ```bash
+     sudo ifconfig
+     ```
+
+   - Adiciona a sub-interface (O IP será diferente conforme o grupo)
+     Adicionando o IP para a rede LAN com o Windows
+     ```bash
+     sudo ifconfig enp0s31f6:0 192.168.10.25 netmask 255.255.255.248
+     ```
+     Adicionando o IP para a rede WAN com o Servidor 
+      ```bash
+     sudo ifconfig enp0s31f6 200.10.10.14 netmask 255.255.255.252
+     ```
+      
+   - Cria rota padrão para navegação
+     ```bash 
+     sudo route add -net 0.0.0.0 netmask 0.0.0.0 gw 200.10.10.13
+     ```
+      
+7. **Acessando o site pelo Windows 11**
    - Abra as configurações.
    - Entre em **Rede e Internet**.
       - Clique em **Proxy**.
@@ -523,14 +536,14 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
 ---
 
 7. **Configurando Servidor Linux**
-   Em um computador linux separado faça a intalação do SSH e a adição do IPS atraves das sub-interfaces (seguindo o passo a passo das etapas 3 e 4 respectivamente)
+   Em um computador linux separado faça a intalação do SSH e a adição do IPS atraves das sub-interfaces (seguindo o passo a passo das etapas 3 e 5 respectivamente)
 
-   Obs: Os comandos para os ips deste servidor para esta WAN será
+   Obs: Os comandos para os Ips deste servidor para esta WAN será
      ```bash
-     sudo ifconfig enp0s31f6:0 200.10.10.13 netmask 255.255.255.252
+     sudo ifconfig enp0s31f6:4 200.10.10.13 netmask 255.255.255.252
      ```
-9. 
-   Em um Computador separado e Linux faça a instalação do Ip Tables
+     
+8. Em um Computador separado e Linux faça a instalação do Ip Tables
    
    - Instalação
      ```bash
@@ -540,14 +553,11 @@ O objetivo principal é montar um Servidor de Internet (ISP) onde o computador W
       
      sudo systemctl enable netfilter-persistent
      ```
-
-     - Cria rota no IP TABLES
+   - Comando para liberar o trafego para os outros IPs
+     Obs: no meu comando esta a interface "enp0s31f6" mas caso seja outro nome, coloque a sua respective interface no lugar deste
      ```bash
-     IP route
-
-     route add - net 0.0.0.0 netmask 0.0.0.0 GW IP
+     iptables -t nat -A POSTROUTING -o enp0s31f6 -j MASQUERADE
      ```
-     Colocar as rotas dos endereços referentes ao computador de cada grupo
      
 ### Salvar
 Endereços que começam com 172 são endereços inválidos que não navegam pela internet.
@@ -556,7 +566,7 @@ Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 - **Endereço IPv4:** 
 - **Máscara de Sub-rede:** 
 - **Gateway Padrão:** 
-- **IP Original** aaa
+- **IP Original**
 
 ---
 
@@ -565,8 +575,8 @@ Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 <div align="center">
 
 Nome            |         Link                                               
-- **Grupo 4**  [Pagina Incial do Servidor](http://10.104.16.13/) 
-- **Bloquear**  [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      
+- **Grupo 4**  [Pagina Incial do Servidor](http://192.168.10.25/) 
+- **Bloquear**  [Pagina de Bloqueio](http://192.168.10.25/bloqueado)      
  
 
 </div>
