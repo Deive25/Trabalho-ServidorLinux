@@ -172,7 +172,6 @@
    - Configurações do SQUID
      ```bash
       http_port 3128
-      visible_hostname taviko
       
       # ACLs
       acl sites_bloqueados url_regex -i "/etc/squid/sitesbloqueados.txt"
@@ -217,9 +216,9 @@ Linux: quando criar sub-interface não vai permitir. IPV4 alterar 0 para 1.
 
 <div align="center">
 
-| Nome     | Link                                               |
-|----------|----------------------------------------------------|
-| **Bloquear** | [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      |
-| **Grupo 4** | [http://10.104.16.13/grupo4](http://10.104.16.13/grupo4) |
+Nome                   Link                                               
+**Grupo 4**  [Pagina Incial do Servidor](http://10.104.16.13/grupo4) 
+**Bloquear**  [Pagina de Bloqueio](http://10.104.16.13/bloqueado)      
+ 
 
 </div>
